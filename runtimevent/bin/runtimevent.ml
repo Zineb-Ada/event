@@ -5,7 +5,6 @@ let rec hanoi depart milieu arrivee = function
         hanoi milieu depart arrivee (n - 1);;
 
 let pile = Stack.create ()
-
 let list_of_pair = Hashtbl.create 30
 
 let insert_to_hashtable ((k : string), (v : int64 )) (vl : int64 list)= 
@@ -16,13 +15,13 @@ let insert_to_hashtable ((k : string), (v : int64 )) (vl : int64 list)=
 
 let compute (phase : string) (ts2 : int64) (_, ts1) = (phase, (Int64.sub ts2 ts1))
 
-let rec iter_on_y l = 
+(* let rec iter_on_y l = 
   match l with
     |[] -> ()
     |[e] -> 
       Printf.printf "e de iter on y de la list %Ld \n" e 
     |h :: tl -> 
-      Printf.printf "h de iter on y de la list%Ld \n" h; iter_on_y tl
+      Printf.printf "h de iter on y de la list%Ld \n" h; iter_on_y tl *)
 
 let runtime_begin_inter ts phase =
   Stack.push (phase, ts) (pile);;
@@ -40,15 +39,20 @@ let () =
   let callbacks = Runtime_events.Callbacks.create ~runtime_begin ~runtime_end ()
   in
     hanoi "A" "B" "C" 3;
-      ignore(Runtime_events.read_poll cursor callbacks None);
-      Unix.sleep 1
+    ignore(Runtime_events.read_poll cursor callbacks None);
+  Unix.sleep 1
 
 let rec sum_of_list (l:int64 list) count =
   match l with
   |[] ->  count
   |h :: tl -> sum_of_list tl (count + (Int64.to_int h)) 
 
-let _ = Hashtbl.iter (fun x  (y : int64 list) -> 
-  let len = List.length y in  
-  (Printf.printf "phase name :  %s; average of all phase's values : %d \n%!" x ((sum_of_list y 0) / len)))
-  list_of_pair
+let _ = Hashtbl.iter (fun phase  ts ->
+  let len = List.length ts in
+  (* print_string "average of all phase's values :  ";
+  let _ = List.fold_left (fun i count -> (Int64.add i count) ) (Int64.of_int 0) y
+  in *)
+  (Printf.printf "average of all '%s' values : %d \n%!"
+    phase ((Int64.to_int (List.fold_left
+      (fun i count -> (Int64.add i count) ) (Int64.of_int 0) ts)) / len));
+    )list_of_pair
