@@ -1,35 +1,35 @@
 open Stack
+module Event = Runtime_events
+
+type event = {
+  ts : int64;
+  phase : string;
+}
+type hash = (string , int64 list) Hashtbl.t
+type stack = event Stack.t
 
 let rec hanoi depart milieu arrivee = function 
 | 0 -> ()
 | n -> hanoi depart arrivee milieu (n - 1); 
-        hanoi milieu depart arrivee (n - 1);;
+        hanoi milieu depart arrivee (n - 1)
 
-let pile = Stack.create ()
-let list_of_pair = Hashtbl.create 30
+let dict : hash = Hashtbl.create 30
+let pile : stack = Stack.create ()
 
-let insert_to_hashtable ((k : string), (v : int64 ))= 
-  if Hashtbl.mem list_of_pair k = true then 
-    Hashtbl.replace list_of_pair k (v :: (Hashtbl.find list_of_pair k))
-  else 
-    Hashtbl.add list_of_pair k [v]
+let compute ev_end ev_begin=
+  let diff = (Int64.sub ev_end.ts ev_begin.ts) in
+    match Hashtbl.mem dict ev_begin.phase with
+      |false -> if ev_end.phase = ev_begin.phase then Hashtbl.add dict ev_end.phase [diff]
+              else ()
+      |true -> Hashtbl.replace dict ev_end.phase (diff :: Hashtbl.find dict ev_end.phase)
 
-(* let compute (phase : string) (ts2 : int64) (_, ts1) = 
-  (phase, (Int64.sub ts2 ts1)) *)
+let ev_end ts phase = {ts= Event.Timestamp.to_int64 ts; phase = Event.runtime_phase_name phase}
 
-let compute (phase2 : string) (ts2 : int64) (phase1, ts1) = 
-  if phase1 = phase2 then (phase2, (Int64.sub ts2 ts1))
-  else failwith "there's no b or e"
-
-let runtime_begin_inter ts phase =
-  Stack.push (phase, ts) (pile);;
-
-let runtime_begin _ ts phase =
-  Stack.push ((Runtime_events.runtime_phase_name phase), (Runtime_events.Timestamp.to_int64 ts)) pile
+let runtime_begin _ ts phase=
+    Stack.push (ev_end ts phase) pile
 
 let runtime_end _ ts phase =
-  insert_to_hashtable (compute (Runtime_events.runtime_phase_name phase)
-    (Runtime_events.Timestamp.to_int64 ts) (Stack.pop (pile)))
+  compute (ev_end ts phase) (Stack.pop pile)
 
 let () =
   Runtime_events.start ();
@@ -42,6 +42,7 @@ let () =
 
 let _ = Hashtbl.iter (fun phase ts ->
   let len = List.length ts in
+  print_int len;
   (* print_int len; 
   print_string "len \n";
   print_string "average of all phase's values :  ";
@@ -51,4 +52,4 @@ let _ = Hashtbl.iter (fun phase ts ->
   (Printf.printf "average of all '%i %s' values : %f ms \n%!"
     len phase (Int.to_float ((Int64.to_int (List.fold_left
       (fun i count -> (Int64.add i count) ) (Int64.of_int 0) ts)) / len) *. 0.001));
-    )list_of_pair
+    )dict
