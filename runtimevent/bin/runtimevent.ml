@@ -43,7 +43,7 @@ let runtime_end _ ts phase =
     |Ok v -> ()
     |Error e -> Printf.printf "%s \n" e
 
-let _ =
+let () =
   Runtime_events.start ();
   let cursor = Runtime_events.create_cursor None in
   let callbacks = Runtime_events.Callbacks.create ~runtime_begin ~runtime_end ()
