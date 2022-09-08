@@ -1,0 +1,5 @@
+ (library
+ (public_name counter)
+ ; (modules runtimevent)
+ ; (flags "-runtime-variant=i")
+ (libraries unix runtime_events))

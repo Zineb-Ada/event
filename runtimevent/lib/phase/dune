@@ -1,0 +1,10 @@
+ ; (executable
+ ; (name runtimevent)
+ ; (modules runtimevent)
+ ; (flags "-runtime-variant=i")
+ ; (libraries unix runtime_events))
+ (library
+ (public_name phase)
+ ; (modules runtimevent)
+ ; (flags "-runtime-variant=i")
+ (libraries unix runtime_events counter))

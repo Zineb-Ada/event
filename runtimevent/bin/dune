@@ -2,4 +2,4 @@
  (name runtimevent)
  (modules runtimevent)
  (flags "-runtime-variant=i")
- (libraries unix runtime_events))
+ (libraries unix runtime_events counter phase))
