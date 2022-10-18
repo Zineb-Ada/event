@@ -1,4 +1,4 @@
-(lang dune 3.4)
+(lang dune 3.3)
 
 (name runtimevent)
 
@@ -19,7 +19,7 @@
  (name runtimevent)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune)
+ (depends ocaml dune prometheus)
  (tags
   (topics "to describe" your project)))
 

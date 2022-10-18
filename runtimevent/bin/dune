@@ -1,5 +1,5 @@
  (executable
  (name runtimevent)
- (modules runtimevent)
+ (modules runtimevent util metrics)
  (flags "-runtime-variant=i")
- (libraries unix runtime_events))
+ (libraries unix runtime_events prometheus prometheus-app.unix cohttp-lwt cohttp-lwt-unix))
