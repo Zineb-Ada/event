@@ -26,7 +26,7 @@ let get_counter ?counter_name_input ()=
           match l with 
             | [] -> () 
             | [e] -> Printf.printf "%d \n" e
-            | h :: t -> if h = List.hd ltis then (Printf.printf "%d " h; loop t) else (Printf.printf "%d " h; loop t) in
+            | h :: t -> if h = List.hd ltis then (Printf.printf "%d;X " h; loop t) else (Printf.printf "%d " h; loop t) in
         loop tis) 
         (* List.iter (fun c -> Printf.printf " %d \n"  c) tis *)
       (* Printf.sprintf "%s %i" counter_name tis *)

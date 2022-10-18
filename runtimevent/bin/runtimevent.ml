@@ -9,16 +9,7 @@ module Event = Runtime_events
 | n -> hanoi depart arrivee milieu (n - 1); 
         hanoi milieu depart arrivee (n - 1) *)
 
-let bind o f =
-  match o with
-  | Some x  -> f x
-  | None    -> None
 
-let (let*) x f = bind x f
-
-let timeout =
-    let* p = Some (Lwt_unix.sleep 10.) in
-    Some (Lwt.return None)
 
 let _ =
   Event.start ();
@@ -42,6 +33,8 @@ let _ =
     else if Array.length Sys.argv > 2 then get_phases ~phase_name:(Sys.argv.(1)) ~counter_name_input:(Sys.argv.(2)) ()
     else get_phases ()
 
+
+    
 (* let get_elements phases counters = get_phases (get_counter ())
 let count =
   let doc = "get phases $(docv)" in
