@@ -1,4 +1,4 @@
-open Stack
+(* open Stack
 
 let rec hanoi depart milieu arrivee = function 
 | 0 -> ()
@@ -51,4 +51,46 @@ let _ = Hashtbl.iter (fun phase ts ->
   (Printf.printf "average of all '%i %s' values : %f ms \n%!"
     len phase (Int.to_float ((Int64.to_int (List.fold_left
       (fun i count -> (Int64.add i count) ) (Int64.of_int 0) ts)) / len) *. 0.001));
-    )list_of_pair
+    )list_of_pair *)
+
+    open Runtime_events
+
+    let runtime_counter _ _ts counter count =
+      let open Prometheus in
+      let module C = Metrics.Counters in
+      match counter with
+      | EV_C_MINOR_PROMOTED ->
+        Counter.inc C.minor_promoted (float_of_int count)
+      | _ -> () 
+
+    (* Main loop and tracing function borrowed from
+    https://github.com/patricoferris/runtime-events-demo *)
+
+    let tracing child_alive path_pid =
+      let c = create_cursor path_pid in
+      let cbs = Callbacks.create ~runtime_counter () in
+      while child_alive () do
+        ignore (read_poll c cbs None);
+        Unix.sleepf 0.1
+      done
+
+  let () =
+    (* Extract the user supplied program and arguments. *)
+    let prog, args = Util.prog_args_from_sys_argv Sys.argv in
+    let proc =
+      Unix.create_process_env prog args
+        [| "OCAML_RUNTIME_EVENTS_START=1" |]
+        Unix.stdin Unix.stderr Unix.stdout
+    in
+    Unix.sleepf 0.1;
+    tracing (Util.child_alive proc) (Some (".", proc));
+    Lwt_main.run (Prometheus_unix.serve )
+    Printf.printf "\n"
+
+
+let () =
+  Prometheus_unix.Logging.init ()
+  ~default_level:Logs.Debug
+  ~levels:[
+    "cohttp.lwt.io", Logs.Info;
+  ]
