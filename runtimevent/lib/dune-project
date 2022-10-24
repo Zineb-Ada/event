@@ -1,6 +1,6 @@
-(lang dune 3.3)
+(lang dune 3.4)
 
-(name runtimevent)
+(name phase)
 
 (generate_opam_files true)
 
@@ -16,11 +16,18 @@
 (documentation https://url/to/documentation)
 
 ; (package
+;   (name counter))
+; (package
+;   (name phase))
+
+; (package
 ;  (name runtimevent)
 ;  (synopsis "A short synopsis")
 ;  (description "A longer description")
-;  (depends ocaml dune prometheus)
+;  (depends ocaml dune)
 ;  (tags
 ;   (topics "to describe" your project)))
+
+
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
