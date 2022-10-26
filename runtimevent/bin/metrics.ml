@@ -1,8 +1,8 @@
-let namespace = "runtime"
-let subsystem = "counter"
-
 module Counters = struct
   open Prometheus
+
+let namespace = "runtime"
+let subsystem = "counter"
 
 let minor_promoted =
   let help = "Number of words promoted to the shared heap" in
@@ -50,85 +50,175 @@ let request_minor_realloc_custom_table =
 
 end
 
-let subsystem = "phases"
-(* type histogram = HistogramOpts {
-  Name : "runtime_phases_histogram_metric",
-  Buckets : 
-}  *)
-(* let name = "runtime_phases_histogram_metric_bucket"  *)
-(* let buckets = [] *)
-(* module PH = HistogramOpts (
-  struct 
-    open Prometheus
-    
-) *)
-module Phases = struct
-  open Prometheus 
-
-let major = 
-  let help = "phases" in
-    Gauge.v ~help ~namespace ~subsystem "major"
-
-let minor = 
-  let help = "phases" in
-    Gauge.v ~help ~namespace ~subsystem "minor"
-  (* Counter.v ~help ~namespace ~subsystem "" *)
-  (* rate(http_request_latency_bucket)[1m]
-  Buckets.v ~help ~namespace ~subsystem "explicit_gc_full_major_bucket" *)
-  (* (bucket: "")
-  http_response_duration_ms{quartile="0.5"} *)
-  (* let help = "phases" in  *)
-  (* http_request_duration_seconds_bucket{le=f} *)
+module Buckets = struct
+  let spec = Prometheus.Histogram_spec.of_list [0.; 10.; 50.; 200.; 1000.]
 end
 
-(* explicit_gc_full_major.Observe(0.1) *)
-(* histogram := promauto.NewHistogram(prometheus.HistogramOpts{
-		Name:    "runtime_phases",
-		Buckets: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
-	}) *)
+module Hist = Prometheus.Histogram(Buckets)
+module Phases = struct
+  open Prometheus
 
+let namespace = "runtime"
+let subsystem = "phases_histogram"
 
-(* |	EV_EXPLICIT_GC_SET explicit_gc_set
-|	EV_EXPLICIT_GC_STAT
-|	EV_EXPLICIT_GC_MINOR
-|	EV_EXPLICIT_GC_MAJOR
-|	EV_EXPLICIT_GC_FULL_MAJOR
-|	EV_EXPLICIT_GC_COMPACT
-|	EV_MAJOR
-|	EV_MAJOR_SWEEP
-|	EV_MAJOR_MARK_ROOTS
-|	EV_MAJOR_MARK
-|	EV_MINOR
-|	EV_MINOR_LOCAL_ROOTS
-|	EV_MINOR_FINALIZED
-|	EV_EXPLICIT_GC_MAJOR_SLICE
-|	EV_FINALISE_UPDATE_FIRST
-|	EV_FINALISE_UPDATE_LAST
-|	EV_INTERRUPT_REMOTE
-|	EV_MAJOR_EPHE_MARK
-|	EV_MAJOR_EPHE_SWEEP
-|	EV_MAJOR_FINISH_MARKING
-|	EV_MAJOR_GC_CYCLE_DOMAINS
-|	EV_MAJOR_GC_PHASE_CHANGE
-|	EV_MAJOR_GC_STW
-|	EV_MAJOR_MARK_OPPORTUNISTIC
-|	EV_MAJOR_SLICE
-|	EV_MAJOR_FINISH_CYCLE
-|	EV_MINOR_CLEAR
-|	EV_MINOR_FINALIZERS_OLDIFY
-|	EV_MINOR_GLOBAL_ROOTS
-|	EV_MINOR_LEAVE_BARRIER
-|	EV_STW_API_BARRIER
-|	EV_STW_HANDLER
-|	EV_STW_LEADER
-|	EV_MAJOR_FINISH_SWEEPING
-|	EV_MINOR_FINALIZERS_ADMIN
-|	EV_MINOR_REMEMBERED_SET
-|	EV_MINOR_REMEMBERED_SET_PROMOTE
-|	EV_MINOR_LOCAL_ROOTS_PROMOTE
-|	EV_DOMAIN_CONDITION_WAIT
-|	EV_DOMAIN_RESIZE_HEAP_RESERVATION   *)
-(* http://localhost:3333/explore *)
-(* prometheus --config.file=prometheus.yml
-  dune exec bin/runtimevent.exe _build/default/test/main.exe
-  /Users/tarides/Desktop/Tarides-Ocaml/prometheus_eventring/grafana-9.1.7/bin/grafana-server -homepath /Users/tarides/Desktop/Tarides-Ocaml/prometheus_eventring/grafana-9.1.7 *)
+let explicit_gc_set =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_set"
+
+let explicit_gc_stat =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_stat"
+
+let explicit_gc_minor =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_minor"
+
+let explicit_gc_major =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_major"
+
+let explicit_gc_full_major =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_full_major"
+
+let explicit_gc_compact =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_compact"
+
+let major =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major"
+  
+let major_sweep =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_sweep"
+  
+let major_mark_roots =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_mark_roots"
+  
+let major_mark =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_mark"
+
+let minor =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor"
+  
+let minor_local_roots =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_local_roots"
+
+let minor_finalized =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_finalized"
+
+let explicit_gc_major_slice =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "explicit_gc_major_slice"
+
+let finalise_update_first =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "finalise_update_first"
+
+let finalise_update_last =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "finalise_update_last"
+
+let interrupt_remote =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "interrupt_remote"
+
+let major_ephe_mark =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_ephe_mark"
+  
+let major_ephe_sweep =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_ephe_sweep"
+  
+let major_finish_marking =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_finish_marking"
+  
+let major_gc_cycle_domains =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_gc_cycle_domains"
+
+let major_gc_phase_change =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_gc_phase_change"
+
+let major_gc_stw =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_gc_stw"
+
+let major_mark_opportunistic =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_mark_opportunistic"
+
+let major_slice =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_slice"
+
+let major_finish_cycle =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_finish_cycle"
+  
+let minor_clear =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_clear"
+  
+let minor_finalizers_oldify =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_finalizers_oldify"
+  
+let minor_global_roots =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_global_roots"
+
+let minor_leave_barrier =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_leave_barrier"
+
+let stw_api_barrier =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "stw_api_barrier"
+
+let stw_handler =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "stw_handler"
+
+let stw_leader =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "stw_leader"
+
+let major_finish_sweeping =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "major_finish_sweeping"
+
+let minor_finalizers_admin =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_finalizers_admin"
+
+let minor_remembered_set =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_remembered_set"
+
+let minor_remembered_set_promote =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_remembered_set_promote"
+
+let minor_local_roots_promote =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "minor_local_roots_promote"
+
+let domain_condition_wait =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "domain_condition_wait"
+
+let domain_resize_heap_reservation =
+  let help = "" in
+  Hist.v ~help ~namespace ~subsystem "domain_resize_heap_reservation" 
+
+end
