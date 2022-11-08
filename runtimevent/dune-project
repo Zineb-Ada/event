@@ -16,11 +16,16 @@
 (documentation https://url/to/documentation)
 
 (package
- (name runtimevent)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml dune prometheus)
- (tags
-  (topics "to describe" your project)))
+  (name util))
+(package
+  (name metrics))
+
+; (package
+;  (name runtimevent)
+;  (synopsis "A short synopsis")
+;  (description "A longer description")
+;  (depends ocaml dune prometheus)
+;  (tags
+;   (topics "to describe" your project)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

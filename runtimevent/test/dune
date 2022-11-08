@@ -1,3 +1,4 @@
-(executable (name main)
-(modules main)
-(libraries unix))
+(executable 
+ (name main)
+ (modules main)
+ (libraries unix))
