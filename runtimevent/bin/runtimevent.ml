@@ -1,3 +1,6 @@
+open Util
+open Metrics
+open Cmdliner
 open Runtime_events
 module Event = Runtime_events
 
@@ -51,6 +54,7 @@ let runtime_end _ ts phase =
   let open Prometheus in
   let module P = Metrics.Phases in
   let module H = Metrics.Hist in
+
     let com = compute (ev_end (Event.Timestamp.to_int64 ts) phase) in
       match com with 
         |Ok (p, t) -> 
@@ -114,19 +118,31 @@ let tracing child_alive path_pid =
   in
   looping_over_tracing ()
 
-let () =
+let main port argv =
   (* Extract the user supplied program and arguments. *)
-  let prog, args = Util.prog_args_from_sys_argv Sys.argv in
+  let prog, args =
+    match argv with
+    | prog :: args -> (prog, Array.of_list args)
+    | _ -> failwith "No program given"
+  in
   let proc =
     Unix.create_process_env prog args
       [| "OCAML_RUNTIME_EVENTS_START=1" |]
       Unix.stdin Unix.stdout Unix.stderr
   in
-  Unix.sleepf 0.1;
-  Lwt.async@@(fun() -> tracing (Util.child_alive proc) (Some (".", proc)));
-  let config = Prometheus_unix.config 8888 in
+  Unix.sleepf 0.5;
+  Lwt.async@@(fun() -> tracing (child_alive proc) (Some (".", proc)));
+  let config = Prometheus_unix.config port in
   Lwt_main.run @@Lwt.choose (Prometheus_unix.serve config);
-  Printf.printf "\n"
+  Printf.printf "\n";
+  0
+
+let prom_port = Arg.(value & opt int 8000 & info ["p"; "port"] ~docv:"PORT") 
+let argv = Arg.(non_empty & pos_all string [] & info [] ~docv:"ARGV")
+let main_t = Term.(const main $ prom_port $ argv)
+let cmd = Cmd.v (Cmd.info "main") main_t
+
+let () = Stdlib.exit @@ Cmd.eval' cmd
 
 let () =
   Prometheus_unix.Logging.init ()
@@ -134,3 +150,4 @@ let () =
   ~levels:[
     "cohttp.lwt.io", Logs.Info;
   ]
+  

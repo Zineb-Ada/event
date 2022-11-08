@@ -1,10 +1,9 @@
- (executable
- (name phase)
- (modules phase)
- (flags "-runtime-variant=i")
- (libraries unix runtime_events))
- ; (library
- ; (public_name phase)
- ; ; (modules runtimevent)
- ; ; (flags "-runtime-variant=i")
- ; (libraries unix runtime_events counter))
+(library
+ (public_name util)
+ (libraries unix)
+ (modules util))
+
+(library
+ (public_name metrics)
+ (libraries prometheus prometheus-app.unix cohttp-lwt cohttp-lwt-unix)
+ (modules metrics))

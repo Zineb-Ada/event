@@ -54,9 +54,18 @@ module Buckets = struct
   let spec = Prometheus.Histogram_spec.of_list [0.; 10.; 50.; 200.; 1000.]
 end
 
+(* module LinearBucket = struct 
+  let spec = Prometheus.Histogram_spec.of_linear 0. 1. 0
+end
+
+(* pas encore prete *)
+module ExponentialBuckets = struct
+   let spec = Prometheus.Histogram_spec.of_exponential 0.  *)
+
+(* doc dans des fichiers mli regarder comment se débrouille les autre et écrire une doc qui sera générer à partir des mli *)
+
 module Hist = Prometheus.Histogram(Buckets)
 module Phases = struct
-  open Prometheus
 
 let namespace = "runtime"
 let subsystem = "phases_histogram"
@@ -222,3 +231,17 @@ let domain_resize_heap_reservation =
   Hist.v ~help ~namespace ~subsystem "domain_resize_heap_reservation" 
 
 end
+
+(* module Phases = struct
+  open Prometheus 
+
+let namespace = "runtime"
+let subsystem = "gauge"
+let major = 
+  let help = "runtime_event_phases" in
+    Gauge.v ~help ~namespace ~subsystem "major"
+
+let minor = 
+  let help = "runtime_event_phases" in
+    Gauge.v ~help ~namespace ~subsystem "minor"
+end *)

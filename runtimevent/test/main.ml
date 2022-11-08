@@ -3,6 +3,7 @@ let rec loop () =
   let _ = Gc.full_major () in
   Unix.sleepf 0.1;
   print_endline "lmfao";
+  flush_all ();
   loop ()
 
 let () = loop ()
